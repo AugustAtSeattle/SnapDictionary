@@ -6,12 +6,12 @@ import AVFoundation
 import SwiftUI
 import os.log
 
-final class DataModel: ObservableObject {
+final class CameraViewModel: ObservableObject {
     let camera = Camera()
 //    let photoCollection = PhotoCollection(smartAlbum: .smartAlbumUserLibrary)
     
     @Published var viewfinderImage: Image?
-    @Published var thumbnailImage: Image?
+    @Published var capturedImage: Image?
     
     var isPhotosLoaded = false
     
@@ -42,7 +42,7 @@ final class DataModel: ObservableObject {
         
         for await photoData in unpackedPhotoStream {
             Task { @MainActor in
-                thumbnailImage = photoData.thumbnailImage
+                capturedImage = photoData.thumbnailImage
             }
 //            savePhoto(imageData: photoData.imageData)
         }

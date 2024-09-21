@@ -5,7 +5,7 @@ See the License.txt file for this sample’s licensing information.
 import SwiftUI
 
 struct CameraView: View {
-    @StateObject private var model = DataModel()
+    @StateObject private var model = CameraViewModel()
     @State private var isPhotoCaptured = false
  
     private static let barHeightFactor = 0.15
@@ -73,7 +73,7 @@ struct CameraView: View {
                 Label {
                     Text("Gallery")
                 } icon: {
-                    CapturedImageView(image: model.thumbnailImage)
+                    CapturedImageView(image: model.capturedImage)
                 }
             }
             
