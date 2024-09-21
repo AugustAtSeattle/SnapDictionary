@@ -14,7 +14,7 @@ struct CameraView: View {
         
         NavigationStack {
             GeometryReader { geometry in                
-               cameraPreviewImageView(image:  $model.viewfinderImage )
+               CameraPreviewImageView(image:  $model.viewfinderImage )
                     .overlay(alignment: .top) {
                         Color.black
                             .opacity(0.75)

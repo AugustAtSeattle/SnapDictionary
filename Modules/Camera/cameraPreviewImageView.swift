@@ -4,7 +4,7 @@ See the License.txt file for this sample’s licensing information.
 
 import SwiftUI
 
-struct cameraPreviewImageView: View {
+struct CameraPreviewImageView: View {
     @Binding var image: Image?
     
     var body: some View {
@@ -21,6 +21,6 @@ struct cameraPreviewImageView: View {
 
 struct ViewfinderView_Previews: PreviewProvider {
     static var previews: some View {
-        cameraPreviewImageView(image: .constant(Image(systemName: "pencil")))
+        CameraPreviewImageView(image: .constant(Image(systemName: "pencil")))
     }
 }
