@@ -12,8 +12,7 @@ final class CameraViewModel: ObservableObject {
     
     @Published var viewfinderImage: Image?
     @Published var capturedImage: Image?
-    
-    var isPhotosLoaded = false
+    @Published var isPhotoCaptured = false
     
     init() {
         Task {
@@ -43,6 +42,7 @@ final class CameraViewModel: ObservableObject {
         for await photoData in unpackedPhotoStream {
             Task { @MainActor in
                 capturedImage = photoData.thumbnailImage
+                isPhotoCaptured = true
             }
 //            savePhoto(imageData: photoData.imageData)
         }

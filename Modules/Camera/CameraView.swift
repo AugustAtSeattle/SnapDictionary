@@ -6,7 +6,6 @@ import SwiftUI
 
 struct CameraView: View {
     @StateObject private var model = CameraViewModel()
-    @State private var isPhotoCaptured = false
  
     private static let barHeightFactor = 0.15
     
@@ -14,16 +13,8 @@ struct CameraView: View {
     var body: some View {
         
         NavigationStack {
-            GeometryReader { geometry in
-                ZStack {
-                    // Display the captured image if a photo has been taken, otherwise display the viewfinder
-                    if isPhotoCaptured, let capturedImage = model.viewfinderImage {
-                        CapturedImageView(image: capturedImage) // Show the captured photo
-                    } else {
-                        ViewfinderView(image: $model.viewfinderImage) // Show the live camera feed
-                    }
-                }
-//                ViewfinderView(image:  $model.viewfinderImage )
+            GeometryReader { geometry in                
+               cameraPreviewImageView(image:  $model.viewfinderImage )
                     .overlay(alignment: .top) {
                         Color.black
                             .opacity(0.75)
@@ -79,7 +70,6 @@ struct CameraView: View {
             
             Button {
                 model.camera.takePhoto()
-                isPhotoCaptured = true
             } label: {
                 Label {
                     Text("Take Photo")
