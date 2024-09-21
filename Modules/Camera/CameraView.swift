@@ -5,7 +5,7 @@ See the License.txt file for this sample’s licensing information.
 import SwiftUI
 
 struct CameraView: View {
-    @StateObject private var model = CameraViewModel()
+    @StateObject private var viewModel = CameraViewModel()
  
     private static let barHeightFactor = 0.15
     
@@ -14,7 +14,7 @@ struct CameraView: View {
         
         NavigationStack {
             GeometryReader { geometry in                
-               CameraPreviewImageView(image:  $model.previewImage )
+               CameraPreviewImageView(image:  $viewModel.previewImage )
                     .overlay(alignment: .top) {
                         Color.black
                             .opacity(0.75)
@@ -35,7 +35,7 @@ struct CameraView: View {
                     .background(.black)
             }
             .task {
-                await model.camera.start()
+                await viewModel.camera.start()
 //                await model.loadPhotos()
 //                await model.loadThumbnail()
             }
@@ -44,6 +44,13 @@ struct CameraView: View {
             .navigationBarHidden(true)
             .ignoresSafeArea()
             .statusBar(hidden: true)
+            .fullScreenCover(isPresented: $viewModel.isPhotoCaptured) {
+                if let capturedImage = viewModel.capturedImage {
+                    CapturedImageView(image: capturedImage, onDismiss: {
+                        viewModel.isPhotoCaptured = false
+                    })
+                }
+            }
         }
     }
     
@@ -52,7 +59,7 @@ struct CameraView: View {
             
             Spacer()
             
-            NavigationLink {
+//            NavigationLink {
 //                PhotoCollectionView(photoCollection: model.photoCollection)
 //                    .onAppear {
 //                        model.camera.isPreviewPaused = true
@@ -60,16 +67,16 @@ struct CameraView: View {
 //                    .onDisappear {
 //                        model.camera.isPreviewPaused = false
 //                    }
-            } label: {
-                Label {
-                    Text("Gallery")
-                } icon: {
-                    CapturedImageView(image: model.capturedImage)
-                }
-            }
+//            } label: {
+//                Label {
+//                    Text("Gallery")
+//                } icon: {
+//                    CapturedImageView(image: viewModel.capturedImage)
+//                }
+//            }
             
             Button {
-                model.camera.takePhoto()
+                viewModel.camera.takePhoto()
             } label: {
                 Label {
                     Text("Take Photo")
@@ -86,7 +93,7 @@ struct CameraView: View {
             }
             
             Button {
-                model.camera.switchCaptureDevice()
+                viewModel.camera.switchCaptureDevice()
             } label: {
                 Label("Switch Camera", systemImage: "arrow.triangle.2.circlepath")
                     .font(.system(size: 36, weight: .bold))

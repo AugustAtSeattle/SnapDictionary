@@ -4,50 +4,44 @@ See the License.txt file for this sample’s licensing information.
 
 import SwiftUI
 
-//struct CapturedImageView: View {
-//    var image: Image?
-//    
-//    var body: some View {
-//        ZStack {
-//            Color.white
-//            if let image = image {
-//                image
-//                    .resizable()
-//                    .scaledToFill()
-//            }
-//        }
-//        .frame(width: 41, height: 41)
-//        .cornerRadius(11)
-//    }
-//}
-
 struct CapturedImageView: View {
     var image: Image?
+    var onDismiss: () -> Void
 
     var body: some View {
-        ZStack {
-            Color.gray.opacity(0.2) // Background color
+        ZStack(alignment: .topLeading) {
             if let image = image {
                 image
                     .resizable()
-                    .scaledToFit() // Scale the image to fit the view
-                    .cornerRadius(15) // Rounded corners for the image
+                    .aspectRatio(contentMode: .fit)
+                    .edgesIgnoringSafeArea(.all)
+                    .background(Color.black)
             } else {
-                Image(systemName: "camera") // Placeholder icon
+                Color.gray.opacity(0.2)
+                Image(systemName: "camera")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 50, height: 50)
                     .foregroundColor(.gray)
             }
+            
+            Button(action: onDismiss) {
+                Image(systemName: "xmark")
+                    .font(.system(size: 24, weight: .bold))
+                    .foregroundColor(.white)
+                    .padding(12)
+                    .background(Color.black.opacity(0.6))
+                    .clipShape(Circle())
+            }
+            .padding(.top, 40)
+            .padding(.leading, 20)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding()
     }
 }
 
 struct ThumbnailView_Previews: PreviewProvider {
     static let previewImage = Image(systemName: "photo.fill")
     static var previews: some View {
-        CapturedImageView(image: previewImage)
+        CapturedImageView(image: previewImage, onDismiss: {})
     }
 }
