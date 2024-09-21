@@ -5,8 +5,9 @@
 //  Created by Sailor on 9/21/24.
 //
 
-import SwiftUI
+import Foundation
 import Vision
+import UIKit
 
 class OCRViewModel: ObservableObject {
     @Published var recognizedText: [RecognizedText] = []
@@ -24,7 +25,6 @@ class OCRViewModel: ObservableObject {
             return
         }
 
-        // Create a new request
         let request = VNRecognizeTextRequest { [weak self] (request, error) in
             if let error = error {
                 DispatchQueue.main.async {
@@ -42,7 +42,6 @@ class OCRViewModel: ObservableObject {
                 return
             }
 
-            // Process observations
             let recognizedTexts = observations.compactMap { observation -> RecognizedText? in
                 guard let topCandidate = observation.topCandidates(1).first else { return nil }
                 return RecognizedText(string: topCandidate.string, boundingBox: observation.boundingBox)
@@ -54,15 +53,12 @@ class OCRViewModel: ObservableObject {
             }
         }
 
-        // Configure the request
         request.recognitionLevel = .accurate
-        request.recognitionLanguages = ["en"] // Set the languages you want to recognize
+        request.recognitionLanguages = ["en"] // Adjust as needed
         request.usesLanguageCorrection = true
 
-        // Create a request handler
         let requestHandler = VNImageRequestHandler(cgImage: cgImage, options: [:])
 
-        // Perform the request
         DispatchQueue.global(qos: .userInitiated).async {
             do {
                 try requestHandler.perform([request])

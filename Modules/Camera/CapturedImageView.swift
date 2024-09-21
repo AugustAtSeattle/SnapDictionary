@@ -1,47 +1,62 @@
-/*
-See the License.txt file for this sample’s licensing information.
-*/
+import SwiftUI
 
 import SwiftUI
 
 struct CapturedImageView: View {
-    var image: Image?
+    var image: UIImage
+    @ObservedObject var ocrViewModel: OCRViewModel
     var onDismiss: () -> Void
 
+    @State private var showDictionaryDrawer = false
+    @State private var selectedText: RecognizedText?
+
     var body: some View {
-        ZStack(alignment: .topLeading) {
-            if let image = image {
-                image
+        GeometryReader { geometry in
+            ZStack(alignment: .topLeading) {
+                Image(uiImage: image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .edgesIgnoringSafeArea(.all)
                     .background(Color.black)
-            } else {
-                Color.gray.opacity(0.2)
-                Image(systemName: "camera")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 50, height: 50)
-                    .foregroundColor(.gray)
-            }
-            
-            Button(action: onDismiss) {
-                Image(systemName: "xmark")
-                    .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.white)
-                    .padding(12)
-                    .background(Color.black.opacity(0.6))
-                    .clipShape(Circle())
-            }
-            .padding(.top, 40)
-            .padding(.leading, 20)
-        }
-    }
-}
+                    .overlay(
+                        ZStack {
+                            ForEach(ocrViewModel.recognizedText) { textItem in
+                                TextOverlayView(
+                                    textItem: textItem,
+                                    imageSize: image.size,
+                                    viewSize: geometry.size
+                                )
+                                .onTapGesture {
+                                    selectedText = textItem
+                                    showDictionaryDrawer = true
+                                }
+                            }
+                        }
+                    )
 
-struct ThumbnailView_Previews: PreviewProvider {
-    static let previewImage = Image(systemName: "photo.fill")
-    static var previews: some View {
-        CapturedImageView(image: previewImage, onDismiss: {})
+                // Exit button
+                Button(action: {
+                    onDismiss()
+                }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 24))
+                        .foregroundColor(.white)
+                        .padding(12)
+                }
+                .padding(.top, 40)
+                .padding(.leading, 20)
+            }
+            .sheet(isPresented: $showDictionaryDrawer) {
+                if let selectedText = selectedText {
+                    DictionaryDrawerView(
+                        selectedText: selectedText.string,
+                        dictionaryViewModel: DictionaryViewModel()
+                    )
+                }
+            }
+        }
+        .onAppear {
+            ocrViewModel.performOCR(on: image)
+        }
     }
 }

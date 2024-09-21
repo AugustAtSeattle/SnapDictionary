@@ -10,7 +10,7 @@ final class CameraViewModel: ObservableObject {
     let camera = Camera()
     
     @Published var previewImage: Image?
-    @Published var capturedImage: Image?
+    @Published var capturedImage: UIImage?
     @Published var isPhotoCaptured = false
     
     init() {
@@ -37,79 +37,32 @@ final class CameraViewModel: ObservableObject {
     func handleCameraPhotos() async {
         let unpackedPhotoStream = camera.photoStream
             .compactMap { self.unpackPhoto($0) }
-        
+
         for await photoData in unpackedPhotoStream {
             Task { @MainActor in
-                capturedImage = photoData.thumbnailImage
+                capturedImage = photoData.capturedImage
                 isPhotoCaptured = true
             }
-//            savePhoto(imageData: photoData.imageData)
         }
     }
     
     private func unpackPhoto(_ photo: AVCapturePhoto) -> PhotoData? {
+        // Get the full-size image data
         guard let imageData = photo.fileDataRepresentation() else { return nil }
 
-        guard let previewCGImage = photo.previewCGImageRepresentation(),
-           let metadataOrientation = photo.metadata[String(kCGImagePropertyOrientation)] as? UInt32,
-              let cgImageOrientation = CGImagePropertyOrientation(rawValue: metadataOrientation) else { return nil }
-        let imageOrientation = Image.Orientation(cgImageOrientation)
-        let thumbnailImage = Image(decorative: previewCGImage, scale: 1, orientation: imageOrientation)
-        
-        let photoDimensions = photo.resolvedSettings.photoDimensions
-        let imageSize = (width: Int(photoDimensions.width), height: Int(photoDimensions.height))
-        let previewDimensions = photo.resolvedSettings.previewDimensions
-        let thumbnailSize = (width: Int(previewDimensions.width), height: Int(previewDimensions.height))
-        
-        return PhotoData(thumbnailImage: thumbnailImage, thumbnailSize: thumbnailSize, imageData: imageData, imageSize: imageSize)
+        // Create a UIImage from the image data
+        guard let uiImage = UIImage(data: imageData) else { return nil }
+
+        // Get the image size
+        let imageSize = (width: Int(uiImage.size.width), height: Int(uiImage.size.height))
+
+        // Return the PhotoData with the UIImage
+        return PhotoData(capturedImage: uiImage, imageData: imageData, imageSize: imageSize)
     }
-    
-//    func savePhoto(imageData: Data) {
-//        Task {
-//            do {
-//                try await photoCollection.addImage(imageData)
-//                logger.debug("Added image data to photo collection.")
-//            } catch let error {
-//                logger.error("Failed to add image to photo collection: \(error.localizedDescription)")
-//            }
-//        }
-//    }
-    
-//    func loadPhotos() async {
-//        guard !isPhotosLoaded else { return }
-//        
-//        let authorized = await PhotoLibrary.checkAuthorization()
-//        guard authorized else {
-//            logger.error("Photo library access was not authorized.")
-//            return
-//        }
-//        
-//        Task {
-//            do {
-//                try await self.photoCollection.load()
-//                await self.loadThumbnail()
-//            } catch let error {
-//                logger.error("Failed to load photo collection: \(error.localizedDescription)")
-//            }
-//            self.isPhotosLoaded = true
-//        }
-//    }
-    
-//    func loadThumbnail() async {
-//        guard let asset = photoCollection.photoAssets.first  else { return }
-//        await photoCollection.cache.requestImage(for: asset, targetSize: CGSize(width: 256, height: 256))  { result in
-//            if let result = result {
-//                Task { @MainActor in
-//                    self.thumbnailImage = result.image
-//                }
-//            }
-//        }
-//    }
 }
 
 fileprivate struct PhotoData {
-    var thumbnailImage: Image
-    var thumbnailSize: (width: Int, height: Int)
+    var capturedImage: UIImage
     var imageData: Data
     var imageSize: (width: Int, height: Int)
 }

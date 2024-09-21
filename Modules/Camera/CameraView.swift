@@ -1,7 +1,3 @@
-/*
-See the License.txt file for this sample’s licensing information.
-*/
-
 import SwiftUI
 
 struct CameraView: View {
@@ -46,9 +42,14 @@ struct CameraView: View {
             .statusBar(hidden: true)
             .fullScreenCover(isPresented: $viewModel.isPhotoCaptured) {
                 if let capturedImage = viewModel.capturedImage {
-                    CapturedImageView(image: capturedImage, onDismiss: {
-                        viewModel.isPhotoCaptured = false
-                    })
+                    CapturedImageView(
+                        image: capturedImage,
+                        ocrViewModel: OCRViewModel(),
+                        onDismiss: {
+                            // Dismiss the full screen cover
+                            viewModel.isPhotoCaptured = false
+                        }
+                    )
                 }
             }
         }
