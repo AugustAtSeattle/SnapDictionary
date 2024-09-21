@@ -60,3 +60,18 @@ struct CapturedImageView: View {
         }
     }
 }
+
+// Add this preview struct at the end of the file
+#Preview {
+    let testImage = UIImage(named: "OCRSampleImage")!
+    let ocrViewModel = OCRViewModel()
+    
+    return CapturedImageView(
+        image: testImage,
+        ocrViewModel: ocrViewModel,
+        onDismiss: {}
+    )
+    .onAppear {
+        ocrViewModel.performOCR(on: testImage)
+    }
+}
