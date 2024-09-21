@@ -10,7 +10,7 @@ final class CameraViewModel: ObservableObject {
     let camera = Camera()
 //    let photoCollection = PhotoCollection(smartAlbum: .smartAlbumUserLibrary)
     
-    @Published var viewfinderImage: Image?
+    @Published var previewImage: Image?
     @Published var capturedImage: Image?
     @Published var isPhotoCaptured = false
     
@@ -30,7 +30,7 @@ final class CameraViewModel: ObservableObject {
 
         for await image in imageStream {
             Task { @MainActor in
-                viewfinderImage = image
+                previewImage = image
             }
         }
     }
