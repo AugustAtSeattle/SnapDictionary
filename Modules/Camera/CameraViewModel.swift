@@ -8,7 +8,6 @@ import os.log
 
 final class CameraViewModel: ObservableObject {
     let camera = Camera()
-//    let photoCollection = PhotoCollection(smartAlbum: .smartAlbumUserLibrary)
     
     @Published var previewImage: Image?
     @Published var capturedImage: Image?

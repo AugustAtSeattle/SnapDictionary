@@ -56,25 +56,7 @@ struct CameraView: View {
     
     private func buttonsView() -> some View {
         HStack(spacing: 60) {
-            
             Spacer()
-            
-//            NavigationLink {
-//                PhotoCollectionView(photoCollection: model.photoCollection)
-//                    .onAppear {
-//                        model.camera.isPreviewPaused = true
-//                    }
-//                    .onDisappear {
-//                        model.camera.isPreviewPaused = false
-//                    }
-//            } label: {
-//                Label {
-//                    Text("Gallery")
-//                } icon: {
-//                    CapturedImageView(image: viewModel.capturedImage)
-//                }
-//            }
-            
             Button {
                 viewModel.camera.takePhoto()
             } label: {
@@ -91,17 +73,7 @@ struct CameraView: View {
                     }
                 }
             }
-            
-            Button {
-                viewModel.camera.switchCaptureDevice()
-            } label: {
-                Label("Switch Camera", systemImage: "arrow.triangle.2.circlepath")
-                    .font(.system(size: 36, weight: .bold))
-                    .foregroundColor(.white)
-            }
-            
             Spacer()
-        
         }
         .buttonStyle(.plain)
         .labelStyle(.iconOnly)
