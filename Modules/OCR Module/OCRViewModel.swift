@@ -4,8 +4,6 @@
 //
 //  Created by Sailor on 9/21/24.
 //
-
-import Foundation
 import Vision
 import UIKit
 
@@ -24,6 +22,9 @@ class OCRViewModel: ObservableObject {
             isProcessing = false
             return
         }
+
+        // Convert UIImage orientation to CGImagePropertyOrientation
+        let cgOrientation = CGImagePropertyOrientation(image.imageOrientation)
 
         let request = VNRecognizeTextRequest { [weak self] (request, error) in
             if let error = error {
@@ -57,7 +58,7 @@ class OCRViewModel: ObservableObject {
         request.recognitionLanguages = ["en"] // Adjust as needed
         request.usesLanguageCorrection = true
 
-        let requestHandler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+        let requestHandler = VNImageRequestHandler(cgImage: cgImage, orientation: cgOrientation, options: [:])
 
         DispatchQueue.global(qos: .userInteractive).async {
             do {
@@ -68,6 +69,23 @@ class OCRViewModel: ObservableObject {
                     self?.isProcessing = false
                 }
             }
+        }
+    }
+}
+
+// Helper function to convert UIImageOrientation to CGImagePropertyOrientation
+extension CGImagePropertyOrientation {
+    init(_ uiImageOrientation: UIImage.Orientation) {
+        switch uiImageOrientation {
+        case .up: self = .up
+        case .down: self = .down
+        case .left: self = .left
+        case .right: self = .right
+        case .upMirrored: self = .upMirrored
+        case .downMirrored: self = .downMirrored
+        case .leftMirrored: self = .leftMirrored
+        case .rightMirrored: self = .rightMirrored
+        @unknown default: self = .up
         }
     }
 }
