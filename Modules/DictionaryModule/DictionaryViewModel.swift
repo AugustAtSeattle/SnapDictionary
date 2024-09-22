@@ -7,49 +7,56 @@
 
 import Foundation
 import Combine
+import AVFoundation
 
-protocol DictionaryServiceProtocol {
-    func fetchDefinition(for word: String) -> AnyPublisher<String, Error>
-}
-
+@MainActor
 class DictionaryViewModel: ObservableObject {
-    @Published var definition: String?
+    private let dictionaryService: DictionaryServiceProtocol
+    private var audioPlayer: AVAudioPlayer?
+
     @Published var isLoading = false
     @Published var errorMessage: String?
+    @Published var entries: [DictionaryEntry] = []
 
-    private var cancellables = Set<AnyCancellable>()
-    private let dictionaryService: DictionaryServiceProtocol
-
-    init(dictionaryService: DictionaryServiceProtocol = DictionaryService.shared) {
+    init(dictionaryService: DictionaryServiceProtocol) {
         self.dictionaryService = dictionaryService
     }
 
-    func fetchDefinition(for word: String) {
-        isLoading = true
-        definition = nil
-        errorMessage = nil
+    func fetchWordInfo(for word: String) {
+        Task {
+            isLoading = true
+            errorMessage = nil
+            entries = []
 
-        dictionaryService.fetchDefinition(for: word)
-            .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: { [weak self] completion in
-                self?.isLoading = false
-                switch completion {
-                case .finished:
-                    break
-                case .failure(let error):
-                    self?.errorMessage = error.localizedDescription
-                }
-            }, receiveValue: { [weak self] definition in
-                self?.definition = definition
-            })
-            .store(in: &cancellables)
+            do {
+                entries = try await dictionaryService.fetchWordInfo(for: word)
+                isLoading = false
+            } catch {
+                errorMessage = error.localizedDescription
+                isLoading = false
+            }
+        }
+    }
+
+    func playAudioSample(for audioURL: String) {
+        guard let url = URL(string: audioURL) else { return }
+
+        Task {
+            do {
+                let (data, _) = try await URLSession.shared.data(from: url)
+                audioPlayer = try AVAudioPlayer(data: data)
+                audioPlayer?.play()
+            } catch {
+                print("Error playing audio: \(error.localizedDescription)")
+            }
+        }
     }
 
     func reset() {
-        definition = nil
-        errorMessage = nil
         isLoading = false
-        cancellables.forEach { $0.cancel() }
-        cancellables.removeAll()
+        errorMessage = nil
+        entries = []
+        audioPlayer?.stop()
+        audioPlayer = nil
     }
 }

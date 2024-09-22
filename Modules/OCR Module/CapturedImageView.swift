@@ -52,7 +52,7 @@ struct CapturedImageView: View {
                 if let selectedText = selectedText {
                     DictionaryDrawerView(
                         selectedText: selectedText.string,
-                        dictionaryViewModel: DictionaryViewModel()
+                        viewModel: DictionaryViewModel(dictionaryService: DictionaryService())
                     )
                 }
             }
