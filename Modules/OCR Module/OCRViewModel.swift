@@ -59,7 +59,7 @@ class OCRViewModel: ObservableObject {
 
         let requestHandler = VNImageRequestHandler(cgImage: cgImage, options: [:])
 
-        DispatchQueue.global(qos: .userInitiated).async {
+        DispatchQueue.global(qos: .userInteractive).async {
             do {
                 try requestHandler.perform([request])
             } catch {
