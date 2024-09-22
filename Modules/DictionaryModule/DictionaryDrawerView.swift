@@ -62,7 +62,7 @@ struct EntryView: View {
     @ObservedObject var viewModel: DictionaryViewModel
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .center, spacing: 16) {
             // Phonetics
             if let phonetic = entry.phonetic {
                 Text(phonetic)
@@ -71,7 +71,7 @@ struct EntryView: View {
             }
 
             // Audio
-            if let audio = entry.phonetics.first(where: { $0.audio != nil })?.audio {
+            if let audio = entry.phonetics.first(where: { $0.audio != nil })?.audio, !audio.isEmpty {
                 Button(action: {
                     viewModel.playAudioSample(for: audio)
                 }) {
@@ -79,7 +79,9 @@ struct EntryView: View {
                         .foregroundColor(.blue)
                 }
             }
-
+        }
+        
+        VStack(alignment: .leading, spacing: 16) {
             // Origin
             if let origin = entry.origin {
                 Text("Origin: \(origin)")
