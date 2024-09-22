@@ -28,8 +28,11 @@ class DictionaryViewModel: ObservableObject {
             errorMessage = nil
             entries = []
 
+            // Parse the word: remove spaces and take the first part
+            let parsedWord = word.trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: .whitespaces).first ?? ""
+
             do {
-                entries = try await dictionaryService.fetchWordInfo(for: word)
+                entries = try await dictionaryService.fetchWordInfo(for: parsedWord)
                 isLoading = false
             } catch {
                 errorMessage = error.localizedDescription
