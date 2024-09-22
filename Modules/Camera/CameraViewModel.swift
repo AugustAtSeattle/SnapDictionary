@@ -40,6 +40,7 @@ final class CameraViewModel: ObservableObject {
 
         for await photoData in unpackedPhotoStream {
             Task { @MainActor in
+                camera.stop()
                 capturedImage = photoData.capturedImage
                 isPhotoCaptured = true
             }

@@ -32,8 +32,6 @@ struct CameraView: View {
             }
             .task {
                 await viewModel.camera.start()
-//                await model.loadPhotos()
-//                await model.loadThumbnail()
             }
             .navigationTitle("Camera")
             .navigationBarTitleDisplayMode(.inline)
@@ -48,6 +46,9 @@ struct CameraView: View {
                         onDismiss: {
                             // Dismiss the full screen cover
                             viewModel.isPhotoCaptured = false
+                            Task {
+                                await viewModel.camera.start()
+                            }
                         }
                     )
                 }
