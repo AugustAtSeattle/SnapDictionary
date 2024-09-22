@@ -42,14 +42,33 @@ class DictionaryViewModel: ObservableObject {
     }
 
     func playAudioSample(for audioURL: String) {
-        guard let url = URL(string: audioURL) else { return }
+        print("Audio audioURL", audioURL)
+        guard let url = URL(string: audioURL) else {
+            print("Invalid URL")
+            return
+        }
 
         Task {
             do {
+                // Configure the audio session
+                try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
+                try AVAudioSession.sharedInstance().setActive(true)
+                print("Audio session successfully activated.")
+
+                // Fetch the audio data from the URL
                 let (data, _) = try await URLSession.shared.data(from: url)
+                print("Audio data fetched successfully, size: \(data.count) bytes")
+
+                // Initialize the audio player
                 audioPlayer = try AVAudioPlayer(data: data)
+                print("Audio player initialized successfully.")
+
+                // Play the audio
                 audioPlayer?.play()
+                print("Playing audio...")
+
             } catch {
+                // Catch any error and print details
                 print("Error playing audio: \(error.localizedDescription)")
             }
         }
