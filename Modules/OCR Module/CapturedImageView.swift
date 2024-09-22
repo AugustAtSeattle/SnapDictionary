@@ -3,11 +3,10 @@ import SwiftUI
 struct CapturedImageView: View {
     var image: UIImage
     @ObservedObject var ocrViewModel: OCRViewModel
-    var onDismiss: () -> Void
-
     @State private var showDictionaryDrawer = false
     @State private var selectedText: RecognizedText?
-
+    var onDismiss: () -> Void
+    
     var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .topLeading) {
@@ -30,19 +29,25 @@ struct CapturedImageView: View {
                             }
                         }
                     )
-
-                // Exit button
                 Button(action: {
                     onDismiss()
                 }) {
                     Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 24))
-                        .foregroundColor(.white)
-                        .padding(12)
+                        .font(.system(size: 35))
+                        .foregroundColor(.black)
                 }
                 .padding(.top, 40)
                 .padding(.leading, 20)
+                .shadow(color: .gray, radius: 2, x: 0, y: 1)
             }
+            .gesture(
+                DragGesture(minimumDistance: 50)
+                    .onEnded { gesture in
+                        if gesture.translation.width > 100 {
+                            onDismiss()
+                        }
+                    }
+            )
             .sheet(isPresented: $showDictionaryDrawer) {
                 if let selectedText = selectedText {
                     DictionaryDrawerView(
