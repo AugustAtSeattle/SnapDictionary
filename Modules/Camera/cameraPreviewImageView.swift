@@ -12,7 +12,7 @@ struct CameraPreviewImageView: View {
             if let image = image {
                 image
                     .resizable()
-                    .scaledToFill()
+                    .aspectRatio(contentMode: .fit)
                     .frame(width: geometry.size.width, height: geometry.size.height)
             }
         }
