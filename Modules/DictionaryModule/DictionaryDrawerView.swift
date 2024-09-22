@@ -66,3 +66,10 @@ struct DictionaryDrawerView: View {
         .shadow(radius: 5)
     }
 }
+
+#Preview {
+    Group {
+       DictionaryDrawerView(selectedText: "Hello", dictionaryViewModel: DictionaryViewModel( dictionaryService: DictionaryService.shared))
+//        DictionaryDrawerView(selectedText: "World", dictionaryViewModel: DictionaryViewModel(dictionaryService: LocalDictionaryService.shared))
+    }
+}

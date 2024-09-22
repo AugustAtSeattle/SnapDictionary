@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-class DictionaryService {
+class DictionaryService: DictionaryServiceProtocol {
     static let shared = DictionaryService()
 
     private init() {}

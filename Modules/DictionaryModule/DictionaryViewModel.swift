@@ -8,19 +8,28 @@
 import Foundation
 import Combine
 
+protocol DictionaryServiceProtocol {
+    func fetchDefinition(for word: String) -> AnyPublisher<String, Error>
+}
+
 class DictionaryViewModel: ObservableObject {
     @Published var definition: String?
     @Published var isLoading = false
     @Published var errorMessage: String?
 
     private var cancellables = Set<AnyCancellable>()
+    private let dictionaryService: DictionaryServiceProtocol
+
+    init(dictionaryService: DictionaryServiceProtocol = DictionaryService.shared) {
+        self.dictionaryService = dictionaryService
+    }
 
     func fetchDefinition(for word: String) {
         isLoading = true
         definition = nil
         errorMessage = nil
 
-        DictionaryService.shared.fetchDefinition(for: word)
+        dictionaryService.fetchDefinition(for: word)
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { [weak self] completion in
                 self?.isLoading = false
