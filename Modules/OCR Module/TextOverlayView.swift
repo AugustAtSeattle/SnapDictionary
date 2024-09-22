@@ -23,10 +23,6 @@ struct TextOverlayView: View {
     }
 
     func boundingBoxInViewSpace() -> CGRect {
-        // Convert the bounding box from image coordinates to view coordinates
-        // Vision bounding boxes are normalized with origin at bottom-left
-        // SwiftUI coordinates have origin at top-left
-
         let imageAspectRatio = imageSize.width / imageSize.height
         let viewAspectRatio = viewSize.width / viewSize.height
 

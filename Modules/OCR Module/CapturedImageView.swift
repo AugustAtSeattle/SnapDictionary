@@ -1,7 +1,5 @@
 import SwiftUI
 
-import SwiftUI
-
 struct CapturedImageView: View {
     var image: UIImage
     @ObservedObject var ocrViewModel: OCRViewModel
@@ -16,8 +14,7 @@ struct CapturedImageView: View {
                 Image(uiImage: image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .edgesIgnoringSafeArea(.all)
-                    .background(Color.black)
+                    .frame(width: geometry.size.width, height: geometry.size.height)
                     .overlay(
                         ZStack {
                             ForEach(ocrViewModel.recognizedText) { textItem in
