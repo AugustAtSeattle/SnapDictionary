@@ -66,8 +66,14 @@ class OCRViewModel: ObservableObject {
                             // Extract the `CGRect` from `VNRectangleObservation`
                             let wordBoundingBox = wordBoundingBoxObservation.boundingBox
                             
-                            // Create the RecognizedText with the word and its bounding box
-                            let recognizedWord = RecognizedText(string: String(word), boundingBox: wordBoundingBox)
+                            if word.isEmpty { continue }
+                            if let firstChar = word.first, !firstChar.isLetter { continue }
+                            let sanitizedWord = word.prefix { char in
+                                char.isLetter
+                            }
+                            
+                            // Create the RecognizedText with the sanitized word and its bounding box
+                            let recognizedWord = RecognizedText(string: String(sanitizedWord), boundingBox: wordBoundingBox)
                             recognizedWords.append(recognizedWord)
                         }
 
