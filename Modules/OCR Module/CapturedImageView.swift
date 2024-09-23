@@ -10,35 +10,46 @@ struct CapturedImageView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .topLeading) {
-                Image(uiImage: image)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: geometry.size.width, height: geometry.size.height)
-                    .overlay(
-                        ZStack {
-                            ForEach(ocrViewModel.recognizedText) { textItem in
-                                TextOverlayView(
-                                    textItem: textItem,
-                                    imageSize: image.size,
-                                    viewSize: geometry.size
-                                )
-                                .onTapGesture {
-                                    selectedText = textItem
-                                    showDictionaryDrawer = true
+                GeometryReader { imageGeometry in
+                    Image(uiImage: image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: imageGeometry.size.width, height: imageGeometry.size.height)
+                        .overlay(
+                            ZStack {
+                                ForEach(ocrViewModel.recognizedText) { textItem in
+                                    TextOverlayView(
+                                        textItem: textItem,
+                                        imageSize: image.size,
+                                        viewSize: imageGeometry.size
+                                    )
+                                    .onTapGesture {
+                                        selectedText = textItem
+                                        showDictionaryDrawer = true
+                                    }
                                 }
                             }
-                        }
-                    )
-                Button(action: {
-                    onDismiss()
-                }) {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 35))
-                        .foregroundColor(.black)
+                        )
                 }
-                .padding(.top, 40)
-                .padding(.leading, 20)
-                .shadow(color: .gray, radius: 2, x: 0, y: 1)
+                
+                VStack {
+                    HStack {
+                        Button(action: {
+                            onDismiss()
+                        }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .font(.system(size: 30))
+                                .foregroundColor(.white)
+                                .background(Color.black)
+                                .clipShape(Circle())
+                        }
+                        .padding(.top, geometry.safeAreaInsets.top + 10)
+                        .padding(.leading, 20)
+                        
+                        Spacer()
+                    }
+                    Spacer()
+                }
             }
             .gesture(
                 DragGesture(minimumDistance: 50)
