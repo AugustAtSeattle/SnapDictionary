@@ -43,14 +43,44 @@ class OCRViewModel: ObservableObject {
                 return
             }
 
-            let recognizedTexts = observations.compactMap { observation -> RecognizedText? in
+            let recognizedTexts = observations.compactMap { observation -> [RecognizedText]? in
                 guard let topCandidate = observation.topCandidates(1).first else { return nil }
-                guard !topCandidate.string.isEmpty else {return nil}
-                return RecognizedText(string: topCandidate.string, boundingBox: observation.boundingBox)
+                guard !topCandidate.string.isEmpty else { return nil }
+
+                // Get the string (which might be a full sentence or multiple words)
+                let fullString = topCandidate.string
+
+                // Split the string into individual words
+                let words = fullString.split(separator: " ")
+
+                // Prepare to collect individual word bounding boxes and strings
+                var recognizedWords = [RecognizedText]()
+
+                // Iterate over each word and extract its bounding box
+                var searchStartIndex = fullString.startIndex
+                for word in words {
+                    // Find the range of the word in the full string
+                    if let wordRange = fullString.range(of: String(word), range: searchStartIndex..<fullString.endIndex) {
+                        // Use the `boundingBox(for:)` with the `Range<String.Index>`
+                        if let wordBoundingBoxObservation = try? topCandidate.boundingBox(for: wordRange) {
+                            // Extract the `CGRect` from `VNRectangleObservation`
+                            let wordBoundingBox = wordBoundingBoxObservation.boundingBox
+                            
+                            // Create the RecognizedText with the word and its bounding box
+                            let recognizedWord = RecognizedText(string: String(word), boundingBox: wordBoundingBox)
+                            recognizedWords.append(recognizedWord)
+                        }
+
+                        // Move the search start index forward to avoid finding the same word again
+                        searchStartIndex = wordRange.upperBound
+                    }
+                }
+
+                return recognizedWords.isEmpty ? nil : recognizedWords
             }
 
             DispatchQueue.main.async {
-                self?.recognizedText = recognizedTexts
+                self?.recognizedText = recognizedTexts.flatMap { $0 }
                 self?.isProcessing = false
             }
         }
