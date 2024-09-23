@@ -35,8 +35,14 @@ struct DictionaryDrawerView: View {
                     }
                 }
             } else if let errorMessage = viewModel.errorMessage {
+                #if DEBUG
                 Text("Error: \(errorMessage)")
                     .foregroundColor(.red)
+                #else
+                Text("Oops! We couldn't find a definition for that word. Please try another one.")
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                #endif
             } else {
                 Text("No definition found")
                     .foregroundColor(.secondary)
