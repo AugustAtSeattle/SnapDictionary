@@ -45,6 +45,7 @@ class OCRViewModel: ObservableObject {
 
             let recognizedTexts = observations.compactMap { observation -> RecognizedText? in
                 guard let topCandidate = observation.topCandidates(1).first else { return nil }
+                guard !topCandidate.string.isEmpty else {return nil}
                 return RecognizedText(string: topCandidate.string, boundingBox: observation.boundingBox)
             }
 
