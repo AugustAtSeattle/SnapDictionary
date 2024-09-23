@@ -45,8 +45,9 @@ struct DictionaryDrawerView: View {
             Spacer()
         }
         .padding()
+        .frame(maxWidth: .infinity)
         .background(Color(UIColor.systemBackground))
-        .cornerRadius(16)
+        .cornerRadius(16, corners: [.topLeft, .topRight])
         .shadow(radius: 5)
         .onAppear {
             viewModel.fetchWordInfo(for: selectedText)
@@ -54,6 +55,7 @@ struct DictionaryDrawerView: View {
         .onDisappear {
             viewModel.reset()
         }
+        .edgesIgnoringSafeArea(.bottom)
     }
 }
 
@@ -142,5 +144,23 @@ struct DefinitionView: View {
     Group {
        DictionaryDrawerView(selectedText: "Hello", viewModel: DictionaryViewModel(dictionaryService: DictionaryService()))
 //        DictionaryDrawerView(selectedText: "World", dictionaryViewModel: DictionaryViewModel(dictionaryService: LocalDictionaryService.shared))
+    }
+}
+
+
+// Add this extension to apply corner radius to specific corners
+extension View {
+    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
+        clipShape(RoundedCorner(radius: radius, corners: corners))
+    }
+}
+
+struct RoundedCorner: Shape {
+    var radius: CGFloat = .infinity
+    var corners: UIRectCorner = .allCorners
+
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+        return Path(path.cgPath)
     }
 }
