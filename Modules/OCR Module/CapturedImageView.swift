@@ -4,7 +4,6 @@ struct CapturedImageView: View {
     var image: UIImage
     @ObservedObject var ocrViewModel: OCRViewModel
     @State private var showDictionaryDrawer = false
-    @State private var selectedText: RecognizedText?
     var onDismiss: () -> Void
     
     var body: some View {
@@ -24,8 +23,8 @@ struct CapturedImageView: View {
                                         viewSize: imageGeometry.size
                                     )
                                     .onTapGesture {
-                                        selectedText = textItem
-                                        showDictionaryDrawer = true
+                                        ocrViewModel.selectedText = textItem
+                                        self.showDictionaryDrawer = true
                                     }
                                 }
                             }
@@ -51,22 +50,16 @@ struct CapturedImageView: View {
                     Spacer()
                 }
             }
-            .gesture(
-                DragGesture(minimumDistance: 50)
-                    .onEnded { gesture in
-                        if gesture.translation.width > 100 {
-                            onDismiss()
-                        }
-                    }
-            )
-            .sheet(isPresented: $showDictionaryDrawer) {
-                if let selectedText = selectedText {
+            .sheet(isPresented: $showDictionaryDrawer, content: {
+                if let selectedText = ocrViewModel.selectedText {
                     DictionaryDrawerView(
                         selectedText: selectedText.string,
                         viewModel: DictionaryViewModel(dictionaryService: DictionaryService())
                     )
+                } else {
+                    Text("No text selected")
                 }
-            }
+            })
         }
         .onAppear {
             ocrViewModel.performOCR(on: image)

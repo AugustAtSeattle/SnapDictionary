@@ -11,7 +11,7 @@ class OCRViewModel: ObservableObject {
     @Published var recognizedText: [RecognizedText] = []
     @Published var isProcessing = false
     @Published var errorMessage: String?
-
+    @Published var selectedText: RecognizedText?
     func performOCR(on image: UIImage) {
         isProcessing = true
         recognizedText = []
