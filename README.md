@@ -32,7 +32,11 @@
 
 ## Screenshots
 
-*Note: TBD*
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/e7d0433e-6ef5-4110-af90-dd869f4a8b51" alt="Screenshot 1" width="300"/>
+  <img src="https://github.com/user-attachments/assets/56fd42a3-8d47-4e4e-8bac-5bad88400813" alt="Screenshot 2" width="300"/>
+</p>
+
 
 ---
 
